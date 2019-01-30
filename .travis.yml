@@ -1,0 +1,21 @@
+---
+dist: xenial
+language: java
+cache:
+  directories:
+  - $HOME/.m2
+
+install:
+ - ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+
+jobs:
+ include:
+
+  - stage: test
+    name: Test App
+    script: ./mvnw test -B
+
+  - stage: deploy
+    name: bonkers
+    install: skip # maybe needs change  
+    script: echo "go bonkers"
