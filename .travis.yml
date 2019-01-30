@@ -6,14 +6,14 @@ cache:
   - $HOME/.m2
 
 install:
- - ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+ - ./app/mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 
 jobs:
  include:
 
   - stage: test
     name: Test App
-    script: ./mvnw test -B
+    script: ./app/mvnw test -B
 
   - stage: deploy
     name: bonkers
