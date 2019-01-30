@@ -1,6 +1,9 @@
 ---
 dist: xenial
 language: java
+cache:
+  directories:
+  - $HOME/.m2
 
 before_script:
  - ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
