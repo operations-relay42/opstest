@@ -1,0 +1,63 @@
+---
+
+- hosts: all
+  become: true
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    app_name: opstest
+    systemd_service_name: "{{ app_name }}"
+    systemd_service_Unit_Description: Application description. Lorem Ipsum.
+    systemd_service_Service_ExecStart: "/usr/local/bin/{{ app_name }}/mvnw spring-boot:run"
+    systemd_service_Service_User: "{{ app_name }}"
+    systemd_service_Service_Group: "{{ app_name }}"
+    systemd_service_Service_Restart: on-failure
+    systemd_service_Service_WorkingDirectory: "/usr/local/bin/{{ app_name }}"
+
+  roles: 
+    - { role: 'tumf.systemd-service', tags: ['systemd'] }       
+    - { role: 'geerlingguy.java', tags: ['java'] }
+
+  pre_tasks:
+    - name: Update system packages
+      apt:
+        #TODO upgrade: yes
+        update_cache: yes
+      tags: system_update
+
+    - name: Create app user
+      user:
+        name: "{{ app_name }}"
+        shell: /bin/bash
+      tags: app_user
+      
+    - name: Create app directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ app_name}}"
+        group: "{{ app_name }}"
+      with_items:
+        - "/usr/local/bin/{{ app_name }}"
+        - "/var/log/{{app_name}}"
+      tags: app_dir
+    
+    - name: Copy app to final destination 
+      copy:
+        src: ../app/
+        dest: "/usr/local/bin/{{ app_name }}"
+        owner: "{{ app_name }}"
+        group: "{{ app_name }}"      
+      tags: app_copy
+
+    - name: Make wrapper script executable
+      file:
+        path: "/usr/local/bin/{{ app_name }}/mvnw"
+        mode: 0770
+      tags: app_perms
+
+  post_tasks:
+    - name: Enable app service
+      service:
+        name: "{{ app_name }}"
+        enabled: yes
+      tags: app_service
