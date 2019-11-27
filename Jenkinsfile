@@ -21,7 +21,6 @@ properties(
 pipeline {
   agent none
 
-stages {
   stage("Checkout") {
         agent {
             ecs {
@@ -29,7 +28,6 @@ stages {
             }
         }
   }
-}
 /*
   stage("Build") {
     sh "rm -rf ./target"
