@@ -1,3 +1,5 @@
+pipeline {
+  agent none
 properties(
   [
     parameters(
@@ -18,7 +20,7 @@ properties(
   ]
 )
 
-node {
+stages {
   stage("Checkout") {
         agent {
             ecs {
@@ -26,6 +28,7 @@ node {
             }
         }
   }
+}
 /*
   stage("Build") {
     sh "rm -rf ./target"
