@@ -19,12 +19,12 @@ properties(
 )
 
 node {
-  	stage("checkout") {
-    	checkout scm
-  	}
+  stage("checkout") {
+    checkout scm
+  }
 
-    stage("Build") {
-      
-    }
+  stage("Build") {
+    sh "./mvnw clean package spring-boot:repackage"
+  }
 }
 
