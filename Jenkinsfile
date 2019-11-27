@@ -20,16 +20,24 @@ properties(
 
 node {
   stage("Checkout") {
-    checkout scm
+        agent {
+            ecs {
+                inheritFrom 'java-ecs-slave'
+            }
+        }
   }
-
+/*
   stage("Build") {
     sh "rm -rf ./target"
     sh "./mvnw clean package spring-boot:repackage"
   }
-
   stage("Publish") {
     sh "./mvnw clean package spring-boot:repackage"
+    sh '''
+    cp Dockerfile ./target/ \
+    && sudo docker build 
+    '''
   }
+  */
 }
 
