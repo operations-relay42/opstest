@@ -1,3 +1,4 @@
+/*
 properties(
   [
     parameters(
@@ -28,7 +29,7 @@ pipeline {
             }
         }
   }
-/*
+
   stage("Build") {
     sh "rm -rf ./target"
     sh "./mvnw clean package spring-boot:repackage"
@@ -40,6 +41,18 @@ pipeline {
     && sudo docker build 
     '''
   }
-  */
+  
+}
+*/
+pipeline {
+  agent none
+  stages {
+    stage('Test') {
+        agent { label 'jenkins-ecs-slave'}
+        steps {
+            sh 'echo hello from fargate'
+        }
+    }
+  }
 }
 
