@@ -1,5 +1,3 @@
-pipeline {
-  agent none
 properties(
   [
     parameters(
@@ -19,6 +17,9 @@ properties(
 		)
   ]
 )
+
+pipeline {
+  agent none
 
 stages {
   stage("Checkout") {
