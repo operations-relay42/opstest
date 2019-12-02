@@ -48,7 +48,7 @@ pipeline {
   agent none
   stages {
     stage('Test') {
-        agent { label 'jnlp-slave-with-java-build-tools'}
+        agent { label 'ecs-slave'}
         steps {
             sh 'echo hello from fargate'
         }
