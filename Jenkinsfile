@@ -1,4 +1,4 @@
-/*
+
 properties(
   [
     parameters(
@@ -23,10 +23,10 @@ pipeline {
   agent none
 
   stage("Checkout") {
-        agent {
-            ecs {
-                inheritFrom 'java-ecs-slave'
-            }
+        agent { label 'ecs-slave'}
+        steps {
+            checkout scm
+            sh 'docker --version'
         }
   }
 
@@ -43,7 +43,7 @@ pipeline {
   }
   
 }
-*/
+/*
 pipeline {
   agent none
   stages {
@@ -55,4 +55,5 @@ pipeline {
     }
   }
 }
+*/
 
