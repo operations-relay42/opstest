@@ -21,7 +21,7 @@ properties(
 
 pipeline {
   agent none
-
+  stages {
   stage("Checkout") {
         agent { label 'ecs-slave'}
         steps {
@@ -41,7 +41,7 @@ pipeline {
     && sudo docker build 
     '''
   }
-  
+  }
 }
 /*
 pipeline {
