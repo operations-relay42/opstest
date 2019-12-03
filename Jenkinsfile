@@ -50,7 +50,7 @@ pipeline {
     stage('Test') {
         agent { label 'ecs-slave'}
         steps {
-            sh 'echo hello from fargate'
+            sh 'docker --version'
         }
     }
   }
