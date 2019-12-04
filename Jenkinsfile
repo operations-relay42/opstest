@@ -18,7 +18,7 @@ properties(
   ]
 )
 
-node("ecs-slave") {
+node("ec2-slave") {
   stage("Checkout") {
     checkout scm
   }
