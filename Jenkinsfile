@@ -40,7 +40,7 @@ node("ec2-slave") {
 
     sh "./mvnw clean package spring-boot:repackage"
     sh "cp Dockerfile ./target/ && sudo docker build -t hello-app:$app_version ."
-    sh "sudo $(aws ecr get-login --no-include-email --region ap-southeast-1)"
+    sh "sudo \$(aws ecr get-login --no-include-email --region ap-southeast-1)"
     sh "sudo docker tag hello-app:$app_version 824744317017.dkr.ecr.ap-southeast-1.amazonaws.com/hello-app:$app_version"
     sh "sudo docker push 824744317017.dkr.ecr.ap-southeast-1.amazonaws.com/hello-app:$app_version"
   }
