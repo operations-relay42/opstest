@@ -31,7 +31,7 @@ node("ec2-slave") {
   stage("Publish") {
 		if (params.version == "") {
 			commitId = sh(returnStdout: true, script: 'git rev-parse HEAD')
-      echo "not null"
+      echo "$commitId"
 		} else {
 			commitId = params.version
       echo "null"
