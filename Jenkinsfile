@@ -31,8 +31,10 @@ node("ec2-slave") {
   stage("Publish") {
 		if (params.version == "") {
 			commitId = sh(returnStdout: true, script: 'git rev-parse HEAD')
+      echo "not null"
 		} else {
 			commitId = params.version
+      echo "null"
 		}
     commitId = commitId.trim()
 		def app_version = "$commitId".substring(0,7)
