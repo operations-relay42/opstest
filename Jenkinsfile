@@ -31,34 +31,17 @@ node("ec2-slave") {
   stage("Publish") {
 		if (params.version == "") {
 			commitId = sh(returnStdout: true, script: 'git rev-parse HEAD')
-      echo "$commitId"
 		} else {
 			commitId = params.version
-      echo "null"
 		}
     commitId = commitId.trim()
 		def app_version = "$commitId".substring(0,7)
 		currentBuild.displayName = "#$BUILD_NUMBER -"+" $app_version"
 
-    commit_version = "$version".substring(0,7)
     sh "./mvnw clean package spring-boot:repackage"
-    sh '''
-    cp Dockerfile ./target/ \
-    && sudo docker build -t hello-app:$app_version .
-    '''
+    sh "cp Dockerfile ./target/ && sudo docker build -t hello-app:$app_version ."
+    sh "sudo $(aws ecr get-login --no-include-email --region ap-southeast-1)"
+    sh "sudo docker tag hello-app:$app_version 824744317017.dkr.ecr.ap-southeast-1.amazonaws.com/hello-app:$app_version"
+    sh "sudo docker push 824744317017.dkr.ecr.ap-southeast-1.amazonaws.com/hello-app:$app_version"
   }
 }
-/*
-pipeline {
-  agent none
-  stages {
-    stage('Test') {
-        agent { label 'ecs-slave'}
-        steps {
-            sh 'docker --version'
-        }
-    }
-  }
-}
-*/
-
