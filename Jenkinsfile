@@ -30,7 +30,7 @@ node("ec2-slave") {
 
   stage("Publish") {
 		if (params.version == "") {
-			commitId = sh(returnStdout: true, script: 'git rev-parse HEAD'
+			commitId = sh(returnStdout: true, script: 'git rev-parse HEAD')
 		} else {
 			commitId = params.version
 		}
