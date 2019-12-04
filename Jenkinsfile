@@ -39,7 +39,7 @@ node("ec2-slave") {
 		currentBuild.displayName = "#$BUILD_NUMBER -"+" $app_version"
 
     sh "./mvnw clean package spring-boot:repackage"
-    sh "cp Dockerfile ./target/ && sudo docker build -t hello-app:$app_version ."
+    sh "cp Dockerfile ./target/ && sudo docker build --build-arg JAR_FILE=target/*.jar -t hello-app:$app_version ."
     sh "sudo \$(aws ecr get-login --no-include-email --region ap-southeast-1)"
     sh "sudo docker tag hello-app:$app_version 824744317017.dkr.ecr.ap-southeast-1.amazonaws.com/hello-app:$app_version"
     sh "sudo docker push 824744317017.dkr.ecr.ap-southeast-1.amazonaws.com/hello-app:$app_version"
