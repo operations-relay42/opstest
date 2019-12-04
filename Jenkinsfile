@@ -19,15 +19,14 @@ properties(
   ]
 )
 
-pipeline {
+node("ecs-slave") {
   agent none
-  stages {
   stage("Checkout") {
-        agent { label 'ecs-slave'}
-        steps {
+        //agent { label 'ecs-slave'}
+        //steps {
             checkout scm
             sh 'docker --version'
-        }
+        //}
   }
 
   stage("Build") {
@@ -40,7 +39,6 @@ pipeline {
     cp Dockerfile ./target/ \
     && sudo docker build 
     '''
-  }
   }
 }
 /*
