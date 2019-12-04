@@ -1,4 +1,3 @@
-
 properties(
   [
     parameters(
@@ -22,7 +21,6 @@ properties(
 node("ecs-slave") {
   stage("Checkout") {
     checkout scm
-    sh 'pwd && ls -l'
   }
 
   stage("Build") {
