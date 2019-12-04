@@ -20,24 +20,21 @@ properties(
 )
 
 node("ecs-slave") {
-  agent none
   stage("Checkout") {
-        //agent { label 'ecs-slave'}
-        //steps {
-            checkout scm
-            sh 'docker --version'
-        //}
+    checkout scm
+    sh 'pwd && ls -l'
   }
 
   stage("Build") {
     sh "rm -rf ./target"
     sh "./mvnw clean package spring-boot:repackage"
   }
+
   stage("Publish") {
     sh "./mvnw clean package spring-boot:repackage"
     sh '''
     cp Dockerfile ./target/ \
-    && sudo docker build 
+    && sudo docker build -t a .
     '''
   }
 }
