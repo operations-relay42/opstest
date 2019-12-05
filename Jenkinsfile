@@ -62,12 +62,43 @@ node("ec2-slave") {
   }
 
   stage("tf apply") {
-    sh "cd ~/relay42-infra/hello-app/tf && \
-    terraform get && \
-    terraform init && \
-    terraform apply -auto-approve \
-    -var docker_image=824744317017.dkr.ecr.ap-southeast-1.amazonaws.com/hello-app:$app_version \
-    -var task_desired_count=$task_desired_count \
-    -var asg_desired_capacity=$asg_desired_capacity"
+    def userInput = true
+    def didTimeout = false
+    try {
+      timeout(time: 600, unit: 'SECONDS') {
+        userInput = input(
+          id: 'Proceed1', message: 'Continue?', parameters: [
+            [
+              $class: 'BooleanParameterDefinition',
+              defaultValue: false,
+              description: '',
+              name: 'Please confirm you agree to deploy']
+          ]
+        )
+      }
+    } catch(err) {
+      def user = err.getCauses()[0].getUser()
+      if('SYSTEM' == user.toString()) {
+        didTimeout = true
+      } else {
+        userInput = false
+        echo "Aborted by: [${user}]"
+      }
+    }
+
+    if (didTimeout) {
+      echo "no input was received before timeout"
+    } else if (userInput == true) {
+      sh "cd ~/relay42-infra/hello-app/tf && \
+      terraform get && \
+      terraform init && \
+      terraform apply -auto-approve \
+      -var docker_image=824744317017.dkr.ecr.ap-southeast-1.amazonaws.com/hello-app:$app_version \
+      -var task_desired_count=$task_desired_count \
+      -var asg_desired_capacity=$asg_desired_capacity"
+    } else {
+      echo "this was not successful"
+      currentBuild.result = 'FAILURE'
+    }
   }
 }
