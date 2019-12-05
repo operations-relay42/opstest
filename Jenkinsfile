@@ -21,9 +21,7 @@ properties(
 node("ec2-slave") {
   stage("Checkout") {
     checkout scm
-    dir('/home/ec2-user') {
         checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: "master"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [	[credentialsId: 'github-ssh', url: 'git@github.com:muffat/relay42-infra.git']]]
-    }
   }
 
   stage("Build") {
