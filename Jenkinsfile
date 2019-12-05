@@ -22,9 +22,6 @@ node("ec2-slave") {
   stage("Checkout") {
     deleteDir()
     checkout scm
-  }
-
-  stage("Checkout infra") {
     dir("/home/ec2-user/relay42-infra") {
       git branch: 'master', credentialsId: 'github-ssh', url: 'git@github.com:muffat/relay42-infra.git'
       //checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: "master"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [	[credentialsId: 'github-ssh', url: 'git@github.com:muffat/relay42-infra.git']]]
