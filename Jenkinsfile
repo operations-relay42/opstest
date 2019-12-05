@@ -50,8 +50,8 @@ node("ec2-slave") {
   }
 
   stage("tf plan") {
-    task_desired_count = sh(returnStdout: true, script: 'aws ecs describe-clusters --clusters hello-app --region ap-southeast-1 | grep runningTasksCount | grep -Eo \'[0-9]+\'')
-    asg_desired_capacity = sh(returnStdout: true, script: 'aws ecs describe-clusters --clusters hello-app --region ap-southeast-1 | grep registeredContainerInstancesCount | grep -Eo \'[0-9]+\'')
+    task_desired_count = sh(returnStdout: true, script: 'aws ecs describe-clusters --clusters hello-app --region ap-southeast-1 | grep runningTasksCount | grep -Eo \'[0-9]+\'').toInteger()
+    asg_desired_capacity = sh(returnStdout: true, script: 'aws ecs describe-clusters --clusters hello-app --region ap-southeast-1 | grep registeredContainerInstancesCount | grep -Eo \'[0-9]+\'').toInteger()
     sh "cd ~/relay42-infra/hello-app/tf && \
     terraform get && \
     terraform init && \
@@ -62,8 +62,6 @@ node("ec2-slave") {
   }
 
   stage("tf apply") {
-    task_desired_count = sh(returnStdout: true, script: 'aws ecs describe-clusters --clusters hello-app --region ap-southeast-1 | grep runningTasksCount | grep -Eo \'[0-9]+\'')
-    asg_desired_capacity = sh(returnStdout: true, script: 'aws ecs describe-clusters --clusters hello-app --region ap-southeast-1 | grep registeredContainerInstancesCount | grep -Eo \'[0-9]+\'')
     sh "cd ~/relay42-infra/hello-app/tf && \
     terraform get && \
     terraform init && \
