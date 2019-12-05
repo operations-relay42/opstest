@@ -22,7 +22,7 @@ node("ec2-slave") {
   stage("Checkout") {
     checkout scm
     dir('/home/ec2-user') {
-        git url: 'https://github.com/muffat/relay42-infra.git'
+        git url: 'git@github.com:muffat/relay42-infra.git'
     }
   }
 
