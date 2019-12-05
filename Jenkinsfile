@@ -21,6 +21,9 @@ properties(
 node("ec2-slave") {
   stage("Checkout") {
     checkout scm
+    dir('/home/ec2-user') {
+        git url: 'https://github.com/muffat/relay42-infra.git'
+    }
   }
 
   stage("Build") {
@@ -28,7 +31,7 @@ node("ec2-slave") {
     sh "./mvnw clean package spring-boot:repackage"
   }
 
-  stage("Publish") {
+  stage("Publish") { 
 		if (params.version == "") {
 			commitId = sh(returnStdout: true, script: 'git rev-parse HEAD')
 		} else {
@@ -43,5 +46,26 @@ node("ec2-slave") {
     sh "sudo \$(aws ecr get-login --no-include-email --region ap-southeast-1)"
     sh "sudo docker tag hello-app:$app_version 824744317017.dkr.ecr.ap-southeast-1.amazonaws.com/hello-app:$app_version"
     sh "sudo docker push 824744317017.dkr.ecr.ap-southeast-1.amazonaws.com/hello-app:$app_version"
+  }
+
+  stage("tf plan") {
+    sh "cd ~/relay42-infra/hello-app/tf && \
+    terraform get && \
+    terraform init && \
+    terraform plan \
+    -var docker_image=824744317017.dkr.ecr.ap-southeast-1.amazonaws.com/hello-app:$app_version \
+    -var task_desired_count=$task_desired_count \
+    -var asg_desired_capacity=$asg_desired_capacity"
+  }
+
+  stage("tf apply") {
+    task_desired_count = sh(returnStdout: true, script: 'git rev-parse HEAD')
+    sh "cd ~/relay42-infra/hello-app/tf && \
+    terraform get && \
+    terraform init && \
+    terraform apply -auto-approve \
+    -var docker_image=824744317017.dkr.ecr.ap-southeast-1.amazonaws.com/hello-app:$app_version \
+    -var task_desired_count=$task_desired_count \
+    -var asg_desired_capacity=$asg_desired_capacity"
   }
 }
