@@ -20,6 +20,7 @@ properties(
 
 node("ec2-slave") {
   stage("Checkout") {
+    deleteDir()
     checkout scm
   }
 
