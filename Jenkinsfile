@@ -24,7 +24,6 @@ node("ec2-slave") {
     checkout scm
     dir("/home/ec2-user/relay42-infra") {
       git branch: 'master', credentialsId: 'github-ssh', url: 'git@github.com:muffat/relay42-infra.git'
-      //checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: "master"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [	[credentialsId: 'github-ssh', url: 'git@github.com:muffat/relay42-infra.git']]]
     }
   }
 
@@ -40,7 +39,7 @@ node("ec2-slave") {
 			commitId = params.version
 		}
     commitId = commitId.trim()
-		def app_version = "$commitId".substring(0,7)
+		app_version = "$commitId".substring(0,7)
 		currentBuild.displayName = "#$BUILD_NUMBER -"+" $app_version"
 
     sh "./mvnw clean package spring-boot:repackage"
@@ -51,6 +50,8 @@ node("ec2-slave") {
   }
 
   stage("tf plan") {
+    task_desired_count = sh(returnStdout: true, script: 'aws ecs describe-clusters --clusters hello-app --region ap-southeast-1 | grep runningTasksCount | grep -Eo \'[0-9]+\'')
+    asg_desired_capacity = sh(returnStdout: true, script: 'aws ecs describe-clusters --clusters hello-app --region ap-southeast-1 | grep registeredContainerInstancesCount | grep -Eo \'[0-9]+\'')
     sh "cd ~/relay42-infra/hello-app/tf && \
     terraform get && \
     terraform init && \
@@ -61,7 +62,8 @@ node("ec2-slave") {
   }
 
   stage("tf apply") {
-    task_desired_count = sh(returnStdout: true, script: 'git rev-parse HEAD')
+    task_desired_count = sh(returnStdout: true, script: 'aws ecs describe-clusters --clusters hello-app --region ap-southeast-1 | grep runningTasksCount | grep -Eo \'[0-9]+\'')
+    asg_desired_capacity = sh(returnStdout: true, script: 'aws ecs describe-clusters --clusters hello-app --region ap-southeast-1 | grep registeredContainerInstancesCount | grep -Eo \'[0-9]+\'')
     sh "cd ~/relay42-infra/hello-app/tf && \
     terraform get && \
     terraform init && \
