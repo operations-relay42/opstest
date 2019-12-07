@@ -23,7 +23,7 @@ node("ec2-slave") {
     deleteDir()
     checkout scm
     dir("/home/ec2-user/relay42-infra") {
-      git branch: 'master', credentialsId: 'github-ssh', url: 'git@github.com:muffat/relay42-infra.git'
+      git branch: 'develop', credentialsId: 'github-ssh', url: 'git@github.com:muffat/relay42-infra.git'
     }
   }
 
