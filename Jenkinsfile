@@ -77,7 +77,6 @@ pipeline {
      sh "rm -rf ./target"
      sh "./mvnw clean package spring-boot:repackage"
      sh "cp Dockerfile ./target/ && sudo docker build --build-arg JAR_FILE=target/*.jar -t hello-app:$app_version ."
-     sh "sudo docker build -t hello-app:$app_version ."
     }
    }
   }
