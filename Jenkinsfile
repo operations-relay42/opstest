@@ -74,7 +74,7 @@ pipeline {
      }
      commitId = commitId.trim()
      app_version = "$commitId".substring(0, 7)
-     sh "sudo docker build -t time-app:$app_version ."
+     sh "sudo docker build -t hello-app:$app_version ."
     }
    }
   }
@@ -87,8 +87,8 @@ pipeline {
      //def region_name = "${item}"
      
      sh "sudo \$(aws ecr get-login --no-include-email --region us-east-1)"
-     sh "sudo docker tag time-app:$app_version ${env.AWS_ACCOUNT_NUMBER}.dkr.ecr.us-east-1.amazonaws.com/time-app:$app_version"
-     sh "sudo docker push ${env.AWS_ACCOUNT_NUMBER}.dkr.ecr.us-east-1.amazonaws.com/time-app:$app_version"
+     sh "sudo docker tag hello-app:$app_version ${env.AWS_ACCOUNT_NUMBER}.dkr.ecr.us-east-1.amazonaws.com/hello-app:$app_version"
+     sh "sudo docker push ${env.AWS_ACCOUNT_NUMBER}.dkr.ecr.us-east-1.amazonaws.com/hello-app:$app_version"
    }
    }
   }
@@ -97,8 +97,8 @@ pipeline {
    steps {
     script {
 
-     //task_desired_count = sh(returnStdout: true, script: "aws ecs describe-services --cluster time-app-dev --region ap-southeast-1 --services time-app | grep desiredCount | grep -Eo '[0-9]+' | head -n1").toInteger()
-     //asg_desired_capacity = sh(returnStdout: true, script: "aws ecs describe-clusters --clusters time-app-dev --region ap-southeast-1 | grep registeredContainerInstancesCount | grep -Eo '[0-9]+'").toInteger()
+     //task_desired_count = sh(returnStdout: true, script: "aws ecs describe-services --cluster hello-app-dev --region ap-southeast-1 --services hello-app | grep desiredCount | grep -Eo '[0-9]+' | head -n1").toInteger()
+     //asg_desired_capacity = sh(returnStdout: true, script: "aws ecs describe-clusters --clusters hello-app-dev --region ap-southeast-1 | grep registeredContainerInstancesCount | grep -Eo '[0-9]+'").toInteger()
      terraform_plan(app_version, params.region, "dev")
      terraform_apply(app_version, params.region, "dev")
 
@@ -110,11 +110,11 @@ pipeline {
 }
 
 def terraform_plan(app_version, region, env) {
-  sh "cd ~/relay42-infra/time-app/tf && \
+  sh "cd ~/relay42-infra/hello-app/tf && \
 		terraform get && \
 		terraform init && \
 		terraform workspace select ${region}-${env} && \
-		terraform plan -var docker_image=824744317017.dkr.ecr.us-east-1.amazonaws.com/time-app:${app_version} \
+		terraform plan -var docker_image=824744317017.dkr.ecr.us-east-1.amazonaws.com/hello-app:${app_version} \
 		-var environment=${env} \
 		-var-file=regions/${region}.tfvars"
 }
@@ -148,12 +148,12 @@ def terraform_apply(app_version, region, env) {
   if (didTimeout) {
     echo "no input was received before timeout"
   } else if (userInput == true) {
-    sh "cd ~/relay42-infra/time-app/tf && \
+    sh "cd ~/relay42-infra/hello-app/tf && \
 			terraform get && \
 			terraform init && \
 			terraform workspace select ${region}-${env} && \
 			terraform apply \
-			-var docker_image=824744317017.dkr.ecr.us-east-1.amazonaws.com/time-app:${app_version} \
+			-var docker_image=824744317017.dkr.ecr.us-east-1.amazonaws.com/hello-app:${app_version} \
 		-var environment=${env} \
 		-var-file=regions/${region}.tfvars \
 			-auto-approve"
