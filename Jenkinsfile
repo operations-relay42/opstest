@@ -161,4 +161,4 @@ def terraform_apply(app_version, region, env) {
     echo "this was not successful"
     currentBuild.result = 'FAILURE'
   }
-}Z
+}
