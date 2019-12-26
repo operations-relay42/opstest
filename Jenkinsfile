@@ -74,6 +74,9 @@ pipeline {
      }
      commitId = commitId.trim()
      app_version = "$commitId".substring(0, 7)
+     sh "rm -rf ./target"
+     sh "./mvnw clean package spring-boot:repackage"
+     sh "cp Dockerfile ./target/ && sudo docker build --build-arg JAR_FILE=target/*.jar -t hello-app:$app_version ."
      sh "sudo docker build -t hello-app:$app_version ."
     }
    }
@@ -83,9 +86,6 @@ pipeline {
    steps {
     script {
      currentBuild.displayName = "#$BUILD_NUMBER -" + " $app_version"
-     //regions.each { item ->
-     //def region_name = "${item}"
-     
      sh "sudo \$(aws ecr get-login --no-include-email --region us-east-1)"
      sh "sudo docker tag hello-app:$app_version ${env.AWS_ACCOUNT_NUMBER}.dkr.ecr.us-east-1.amazonaws.com/hello-app:$app_version"
      sh "sudo docker push ${env.AWS_ACCOUNT_NUMBER}.dkr.ecr.us-east-1.amazonaws.com/hello-app:$app_version"
